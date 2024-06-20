@@ -1,51 +1,57 @@
 package Lab3;
 
-import Lab3.Handlers.JSONHandler;
-import Lab3.Handlers.XMLHandler;
-import Lab3.Handlers.YAMLHandler;
+import Lab3.Readers.DBReader;
+import Lab3.Readers.JSONHandler;
+import Lab3.Readers.XMLHandler;
+import Lab3.Readers.YAMLHandler;
+import Lab3.Reactor.Reactor;
+import Lab3.Reactor.ReactorDB;
+import Lab3.Reactor.ReactorTreeNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 
 public class Manager {
-    private final Map<Integer, List<Reactor>> mapOfFiles;
+    final ArrayList<Reactor> reactors;
     private final XMLHandler xmlHandler;
-    private final JSONHandler jsonHandler;
-    private final YAMLHandler yamlHandler;
-    int lastNumber;
+    ArrayList<ReactorDB> reactorDBS;
+
 
     public Manager() {
-        mapOfFiles=new HashMap<>();
+        reactors=new ArrayList<>();
         xmlHandler=new XMLHandler();
-        jsonHandler=new JSONHandler();
-        yamlHandler=new YAMLHandler();
-        xmlHandler.setNext(jsonHandler);
-        jsonHandler.setNext(yamlHandler);
+        xmlHandler.setNext(new JSONHandler());
+        xmlHandler.next.setNext(new YAMLHandler());
 
     }
 
     public void getReactorsFromFile(String filePath) throws JAXBException, IOException {
-        List<Reactor> reactors=xmlHandler.handle(filePath);
         if(reactors==null) throw new IOException("Extension is not correct");
-        mapOfFiles.put(mapOfFiles.size(),xmlHandler.handle(filePath));
-        lastNumber= mapOfFiles.size()-1;
+        reactors.addAll(xmlHandler.handle(filePath));
     }
-    public void getNodeForLastReactor(JTree tree){
+    public void getNodeForLastReactors(JTree tree){
         DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
         DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
-        DefaultMutableTreeNode fileNode=new DefaultMutableTreeNode(mapOfFiles.get(lastNumber).get(0).source);
+        DefaultMutableTreeNode fileNode=new DefaultMutableTreeNode(reactors.get(reactors.size()-1).source);
         treeModel.insertNodeInto(fileNode, rootNode, rootNode.getChildCount());
-        List<Reactor> lastReactors = mapOfFiles.get(lastNumber);
-        for (Reactor reactor : lastReactors) {
+        for (Reactor reactor : reactors) {
             ReactorTreeNode reactorNode = ReactorTreeNode.createReactorNode(reactor);
             treeModel.insertNodeInto(reactorNode, fileNode, fileNode.getChildCount());
         }
     }
+    public void readDatabase() {
+        if (reactors == null){
+            System.out.println("Сначала прочитайте типы реакторов!");
+            return;
+        }
+        DBReader reader = new DBReader();
+        reactorDBS=reader.readDB(reactors);
+        Calculator.calculateFuelLoad(reactorDBS);
+    }
+
 }

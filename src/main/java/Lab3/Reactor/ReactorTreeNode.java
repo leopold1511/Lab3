@@ -1,4 +1,4 @@
-package Lab3;
+package Lab3.Reactor;
 
 import javax.swing.tree.*;
 

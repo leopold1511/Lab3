@@ -1,8 +1,8 @@
-package Lab3.Handlers;
+package Lab3.Readers;
 
-import Lab3.Reactor;
+
+import Lab3.Reactor.Reactor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 import javax.xml.bind.JAXBException;
@@ -10,20 +10,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class YAMLHandler extends BaseHandler {
+public class JSONHandler extends BaseHandler {
 
-    public YAMLHandler() {
-        this.extension = ".yaml";
+    public JSONHandler() {
+        this.extension = ".json";
     }
 
     @Override
-    public List<Reactor> handle(String filePath) throws IOException, JAXBException {
+    public List<Reactor> handle(String filePath) throws JAXBException, IOException {
         File file = new File(filePath);
         if (canHandle(file)) {
             if(next!=null)return next.handle(filePath);
             return null;
         } else {
-            ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+            ObjectMapper objectMapper = new ObjectMapper();
             CollectionType collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, Reactor.class);
             List<Reactor> reactors=objectMapper.readValue(file, collectionType);
             reactors.forEach(reactor -> reactor.source=file.getName());

@@ -1,6 +1,6 @@
-package Lab3.Handlers;
+package Lab3.Readers;
 
-import Lab3.Reactor;
+import Lab3.Reactor.Reactor;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
