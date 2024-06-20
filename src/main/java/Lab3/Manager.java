@@ -17,41 +17,36 @@ import java.util.ArrayList;
 
 
 public class Manager {
-    final ArrayList<Reactor> reactors;
+    final ArrayList<Reactor> reactors = new ArrayList<>();
     private final XMLHandler xmlHandler;
-    ArrayList<ReactorDB> reactorDBS;
-
+    ArrayList<ReactorDB> reactorDBS = new ArrayList<>();
 
     public Manager() {
-        reactors=new ArrayList<>();
-        xmlHandler=new XMLHandler();
+        xmlHandler = new XMLHandler();
         xmlHandler.setNext(new JSONHandler());
         xmlHandler.next.setNext(new YAMLHandler());
-
     }
 
     public void getReactorsFromFile(String filePath) throws JAXBException, IOException {
-        if(reactors==null) throw new IOException("Extension is not correct");
+        if (filePath == null) throw new IOException("File path is null");
         reactors.addAll(xmlHandler.handle(filePath));
     }
-    public void getNodeForLastReactors(JTree tree){
+
+    public void addReactorsToTree(JTree tree) {
         DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
         DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treeModel.getRoot();
-        DefaultMutableTreeNode fileNode=new DefaultMutableTreeNode(reactors.get(reactors.size()-1).source);
+        DefaultMutableTreeNode fileNode = new DefaultMutableTreeNode(reactors.get(reactors.size() - 1).source);
         treeModel.insertNodeInto(fileNode, rootNode, rootNode.getChildCount());
         for (Reactor reactor : reactors) {
             ReactorTreeNode reactorNode = ReactorTreeNode.createReactorNode(reactor);
             treeModel.insertNodeInto(reactorNode, fileNode, fileNode.getChildCount());
         }
     }
-    public void readDatabase() {
-        if (reactors == null){
-            System.out.println("Сначала прочитайте типы реакторов!");
-            return;
-        }
-        DBReader reader = new DBReader();
-        reactorDBS=reader.readDB(reactors);
-        Calculator.calculateFuelLoad(reactorDBS);
-    }
 
+    public void readDatabase() throws IOException {
+        if (reactors.isEmpty()) throw new IOException("Reactors are not initialized");
+        DBReader reader = new DBReader();
+        reactorDBS = reader.readDB(reactors);
+        Calculator.calculateFuelLoadsForReactors(reactorDBS);
+    }
 }

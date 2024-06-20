@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class ReactorDB {
     private String name;
-    private Reactor type;
+    private Reactor reactor;
     private String country;
     private String operator;
     private String owner;
@@ -15,7 +15,7 @@ public class ReactorDB {
     private int shutdownYear;
     private int connectionYear;
     private Map<Integer, Double> loadFactor;
-    private Map<Integer, Double> fuelLoad = new HashMap<>();
+    private final Map<Integer, Double> fuelLoad = new HashMap<>();
 
     public int getConnectionYear() {
         return connectionYear;
@@ -37,8 +37,8 @@ public class ReactorDB {
         this.name = name;
     }
 
-    public Reactor getReactorClass() {
-        return type;
+    public Reactor getReactor() {
+        return reactor;
     }
 
     public void setType(String type_name, ArrayList<Reactor> reactorTypes) {
@@ -95,21 +95,21 @@ public class ReactorDB {
 
     private void chooseType(String type_name, ArrayList<Reactor> reactorTypes) {
         switch (type_name) {
-            case "PWR" -> findType(reactorTypes, "PWR");
-            case "PHWR" -> findType(reactorTypes, "PHWR");
-            case "BWR" -> findType(reactorTypes, "BWR");
-            case "LWGR" -> findType(reactorTypes, "RBMK");
-            case "GCR" -> findType(reactorTypes, "MAGNOX");
-            case "FBR" -> findType(reactorTypes, "BN");
-            case "RBMK" -> findType(reactorTypes, "RBMK");
-            case "VVER" -> findType(reactorTypes, "VVER-1200");
+            case "PWR" -> findReactor(reactorTypes, "PWR");
+            case "PHWR" -> findReactor(reactorTypes, "PHWR");
+            case "BWR" -> findReactor(reactorTypes, "BWR");
+            case "LWGR" -> findReactor(reactorTypes, "RBMK");
+            case "GCR" -> findReactor(reactorTypes, "MAGNOX");
+            case "FBR" -> findReactor(reactorTypes, "BN");
+            case "RBMK" -> findReactor(reactorTypes, "RBMK");
+            case "VVER" -> findReactor(reactorTypes, "VVER-1200");
         }
     }
 
-    private void findType(ArrayList<Reactor> reactorTypes, String typeName) {
-        for (Reactor type : reactorTypes) {
-            if (typeName.equals(type.type)) {
-                this.type = type;
+    private void findReactor(ArrayList<Reactor> reactors, String typeName) {
+        for (Reactor reactor : reactors) {
+            if (typeName.equals(reactor.type)) {
+                this.reactor = reactor;
                 break;
             }
         }

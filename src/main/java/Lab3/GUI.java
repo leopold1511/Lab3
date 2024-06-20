@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,7 +55,7 @@ public class GUI extends JFrame {
             }
             try {
                 manager.getReactorsFromFile(filePath);
-                manager.getNodeForLastReactors(reactorTree);
+                manager.addReactorsToTree(reactorTree);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(GUI.this, "The file does not fit the format " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -65,7 +66,11 @@ public class GUI extends JFrame {
         importDBButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                manager.readDatabase();
+                try {
+                    manager.readDatabase();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         clearButton.addActionListener(new ActionListener() {
