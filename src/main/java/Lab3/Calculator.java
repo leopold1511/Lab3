@@ -10,7 +10,7 @@ import java.util.function.Function;
 public class Calculator {
     private static final int START_YEAR = 2014;
     private static final int END_YEAR = 2025;
-    private static final double DEFAULT_LOAD_FACTOR = 0.85;
+    private static final double DEFAULT_LOAD_FACTOR = 85;
 
     public static void calculateFuelLoadsForReactors(List<ReactorDB> reactors) {
         for (ReactorDB reactor : reactors) {
